@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+model User {
+  id              String          @id @default(uuid()) @db.Uuid
+  name            String
+  email           String          @unique
+  password        String
+  avatarUrl       String?
+  createdAt       DateTime        @default(now()) @db.Timestamp
+  projects        Project[]       @relation("OwnerProject")
+  projectMembers  ProjectMember[] @relation("UserProjectMembers")
+  projectChats    Chat[]          @relation("UserChats")
+  tasks           Task[]          @relation("AssignedTasks")
+}
+
+
+model Project {
+  id              String          @id @default(uuid()) @db.Uuid
+  title           String
+  description     String
+  ownerId         String          @db.Uuid
+  objective       String?
+  scope           String?
+  stakeholders    String?
+  budget          Float?
+  deadline        DateTime?
+  expectedOutcome String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  owner           User            @relation("OwnerProject", fields: [ownerId], references: [id], onDelete: Cascade) 
+  members         ProjectMember[] @relation("ProjectMembers")
+  tasks           Task[]
+  chats           Chat[]
+  calendarEvents  CalendarEvent[]
+}
+
+
+model ProjectMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  userId    String   @db.Uuid
+  role      String
+  joinedAt  DateTime @default(now()) @db.Timestamp
+
+  project Project @relation("ProjectMembers", fields: [projectId], references: [id], onDelete: Cascade) 
+  user    User    @relation("UserProjectMembers", fields: [userId], references: [id], onDelete: Cascade) 
+  
+  @@unique([projectId, userId])
+}
+
+
+model Task {
+  id          String       @id @default(uuid()) @db.Uuid
+  projectId   String       @db.Uuid
+  assignedTo  String       @db.Uuid
+  title       String
+  description String
+  status      String       @default("To Do")
+  priority    String       @default("Medium")
+  deadline    DateTime     @db.Date
+  createdAt   DateTime     @default(now()) @db.Timestamp
+  updatedAt   DateTime     @updatedAt
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User         @relation("AssignedTasks", fields: [assignedTo], references: [id], onDelete: Cascade) 
+  attachments Attachment[] 
+
+  @@index([projectId])
+}
+
+model Attachment {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @db.Uuid // Relasi ke Task
+  fileUrl     String
+  description String
+  uploadedAt  DateTime @default(now()) @db.Timestamp
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Chat {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  userId    String   @db.Uuid
+  message   String
+  createdAt DateTime @default(now()) @db.Timestamp
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation("UserChats", fields: [userId], references: [id], onDelete: Cascade) 
+}
+
+model CalendarEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  title     String
+  eventType String
+  relatedId String   @db.Uuid
+  date      DateTime @db.Date
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,16 @@
+{
+  "name": "flowsync-be",
+  "type": "module",
+  "private": true,
+  "module": "src/index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.2",
+    "zod-validator": "^1.0.1"
+  }
+}
