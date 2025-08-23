@@ -1,13 +1,14 @@
 import { Hono } from "hono";
 import { serve } from "bun";
+import { auth } from "./user/userController";
 
 const app = new Hono();
 
-app.get("/", (c) => c.text("Flowsync API"));
+app.route("/", auth);
+
+app.get("/auth", (c) => c.text("Test"));
 
 console.log("Listening on http://localhost:5000");
-
-console.log("Server Start");
 
 serve({
   fetch: app.fetch,
