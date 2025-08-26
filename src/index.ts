@@ -1,10 +1,12 @@
 import { Hono } from "hono";
 import { serve } from "bun";
-import { auth } from "./user/userController";
+import { auth } from "./controller/user/userController";
+import { project } from "./controller/project/createProjectController";
 
 const app = new Hono();
 
 app.route("/", auth);
+app.route("/", project);
 
 app.get("/auth", (c) => c.text("Test"));
 

@@ -103,7 +103,7 @@ model CalendarEvent {
   title     String
   eventType String
   relatedId String   @db.Uuid
-  date      DateTime @db.Date
+  date      DateTime 
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }

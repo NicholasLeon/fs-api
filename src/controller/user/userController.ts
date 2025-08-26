@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { signUp, signIn } from "./userService";
+import { signUp, signIn } from "../../service/user/userService";
 
 export const auth = new Hono();
 
@@ -13,11 +13,6 @@ const signUpValidation = z.object({
 
 auth.post("/signup", zValidator("json", signUpValidation), async (c) => {
   const body = await c.req.json();
-  const parseData = signUpValidation.safeParse(body);
-
-  if (!parseData.success) {
-    return c.json({ error: parseData.error.flatten().fieldErrors }, 400);
-  }
 
   try {
     const { email, password, name } = body;

@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { sign } from "hono/jwt";
-import { newUser, findUser } from "./userRepository";
-import { password } from "bun";
+import { newUser, findUser } from "../../repository/user/userRepository";
 
 export async function signUp(email: string, password: string, name: string) {
   const existUser = await findUser(email);
