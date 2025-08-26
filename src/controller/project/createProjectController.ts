@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { newProject } from "../../service/project/createProjectService";
 import { Hono } from "hono";
-import { z } from "zod";
+import { json, z } from "zod";
 import { getToken } from "../../middleware/auth";
 
 const projectValidation = z.object({
@@ -23,29 +23,13 @@ project.use("/project", getToken);
 
 project.post("/project", zValidator("json", projectValidation), async (c) => {
   try {
-    const {
-      title,
-      description,
-      objective,
-      scope,
-      stakeholders,
-      budget,
-      deadline,
-      expectedOutcome,
-    } = c.req.valid("json");
+    const body = c.req.valid("json");
 
     const user = c.get("jwtPayload");
     const ownerId = user.id;
 
     const project = await newProject({
-      title,
-      description,
-      objective,
-      scope,
-      stakeholders,
-      budget,
-      deadline,
-      expectedOutcome,
+      ...body,
       ownerId,
     });
     return c.json({ message: "Project Created", project }, 201);
