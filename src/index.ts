@@ -4,10 +4,7 @@ import { auth } from "./controller/user/userController";
 import { project } from "./controller/project/createProjectController";
 import { userProject } from "./controller/project/getUserProjectsController";
 import { deleteProject } from "./controller/project/deleteProjectController";
-import {
-  putArticle,
-  putProject,
-} from "./controller/project/putProjectController";
+import { putProject } from "./controller/project/putProjectController";
 import { patchProject } from "./controller/project/patchProjectController";
 
 const app = new Hono();
